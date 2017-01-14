@@ -29,8 +29,10 @@ void slistclean(slist *l) {
   }
 }
 
-__inline__ int slistempty(slist *l) {
-  return (l->head)?0:1;
+int slistempty(slist *l) {
+  if(l->head)?
+    return 0;
+  return 1;
 }
 
 int slistrmhead(slist *l) {
@@ -65,4 +67,77 @@ int slistrm(slist *l, unsigned long int pos) {
   }
 
   return -1;
+}
+
+int slistpushhead(slist *l, void *elem) {
+  snode *node = (snode *)malloc(sizeof(snode));
+  if(node) {
+    node->elem = elem;
+    node->next = l->head->next;
+    l->head    = node;
+    if(!node->next)
+      l->tail = node;
+    return 0;
+  }
+  return -1;
+}
+
+int slistpush(slist *l, void *elem, unsigned long int pos) {
+  snode *node = (snode *)malloc(sizeof(snode));
+  if(node) {
+    node->elem = elem;
+    snode **prev = &(l->head);
+    while(*prev && pos-- > 0) {
+      prev = &((*prev)->next);
+    }
+
+    if(*prev)
+      l->tail = node;
+
+    node->next = *prev;
+    *prev = node;
+
+    return 0;
+  }
+  return -1;
+}
+
+void *slisthead(slist *l) {
+  if(l->head)
+    return l->head->elem;
+  return NULL;
+}
+
+void *slisttail(slidt *l) {
+  if(l->tail)
+    return l->tail->elem;
+  return NULL;
+}
+
+void *slistelem(slist *l, unsigned long int pos) {
+  if(l->head) {
+    snode *node = h->head;
+    while(node && pos-- > 0) {
+      node = node->next;
+    }
+
+    if(node)
+      return node->elem;
+    return NULL;
+  }n NULL;n NULL;
+  return NULL;
+}
+
+void *slistpophead(slist *l) {
+  if(l->head) {
+    snode *node = l->head;
+    void *elem = node->elem;
+    l->head = node->next;
+    if(!l->head)
+      l->tail = NULL;
+
+    free(node);
+    return elem;
+  }
+  return NULL;
 }
