@@ -17,4 +17,18 @@ typedef struct _slist {
   void (*destroyelem)(void *elem);
 } slist;
 
+void slistinit(slist *l, void (*destroyelem)(void *));
+void slistiterator(slist *l, int (*itfunc)(void *, unsigned long int));
+void slistclean(slist *l);
+int slistempty(slist *l);
+int slistrmhead(slist *l);
+int slistrm(slist *l, unsigned long int pos);
+int slistpushhead(slist *l, void *elem);
+int slistpush(slist *l, void *elem, unsigned long int pos);
+void *slisthead(slist *l);
+void *slisttail(slist *l);
+void *slistelem(slist *l, unsigned long int pos);
+void *slistpophead(slist *l);
+void *slistpop(slist *l, unsigned long int n);
+
 #endif
