@@ -8,12 +8,11 @@ void slistinit(slist *l, void (*destroyelem)(void *)) {
   l->destroyelem = destroyelem;
 }
 
-void slistiterator(slist *l, void (*itfunc)(void *, unsigned long int)) {
+void slistiterator(slist *l, int (*itfunc)(void *, unsigned long int)) {
   snode *node = l->head;
   unsigned long int i = 0ul;
 
-  while(node) {
-    itfunc(node->elem, i++);
+  while(node && itfunc(node->elem, i++)) {
     node = node->next;
   }
 }
@@ -30,7 +29,7 @@ void slistclean(slist *l) {
 }
 
 int slistempty(slist *l) {
-  if(l->head)?
+  if(l->head)
     return 0;
   return 1;
 }
@@ -108,7 +107,7 @@ void *slisthead(slist *l) {
   return NULL;
 }
 
-void *slisttail(slidt *l) {
+void *slisttail(slist *l) {
   if(l->tail)
     return l->tail->elem;
   return NULL;
@@ -116,7 +115,7 @@ void *slisttail(slidt *l) {
 
 void *slistelem(slist *l, unsigned long int pos) {
   if(l->head) {
-    snode *node = h->head;
+    snode *node = l->head;
     while(node && pos-- > 0) {
       node = node->next;
     }
@@ -124,20 +123,39 @@ void *slistelem(slist *l, unsigned long int pos) {
     if(node)
       return node->elem;
     return NULL;
-  }n NULL;n NULL;
+  }
   return NULL;
 }
 
 void *slistpophead(slist *l) {
   if(l->head) {
     snode *node = l->head;
-    void *elem = node->elem;
-    l->head = node->next;
+    void *elem  = node->elem;
+    l->head     = node->next;
+
     if(!l->head)
       l->tail = NULL;
 
     free(node);
     return elem;
   }
+  return NULL;
+}
+
+void *slistpop(slist *l, unsigned long int n) {
+  snode **node = &(l->head);
+  while(*node && n != 0) {
+    node = &((*node)->next);
+    n -= 1;
+  }
+
+  if(*node) {
+    snode *rnode = *node;
+    void *elem   = rnode->elem;
+    *node = (*node)->next;
+    free(rnode);
+    return elem;
+  }
+
   return NULL;
 }
