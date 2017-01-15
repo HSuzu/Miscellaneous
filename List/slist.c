@@ -52,8 +52,9 @@ int slistrmhead(slist *l) {
 
 int slistrm(slist *l, unsigned long int pos) {
   snode **node = &(l->head);
-  while(*node && pos-- > 0) {
+  while(*node && pos != 0) {
     node = &((*node)->next);
+    pos -= 1;
   }
 
   snode *rmnode = *node;
@@ -86,8 +87,9 @@ int slistpush(slist *l, void *elem, unsigned long int pos) {
   if(node) {
     node->elem = elem;
     snode **prev = &(l->head);
-    while(*prev && pos-- > 0) {
+    while(*prev && pos != 0) {
       prev = &((*prev)->next);
+      pos -= 1;
     }
 
     if(*prev)
@@ -116,8 +118,9 @@ void *slisttail(slist *l) {
 void *slistelem(slist *l, unsigned long int pos) {
   if(l->head) {
     snode *node = l->head;
-    while(node && pos-- > 0) {
+    while(node && pos != 0) {
       node = node->next;
+      pos -= 1;
     }
 
     if(node)
