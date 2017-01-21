@@ -23,14 +23,20 @@
 /* Definitions of the error messages */
 #define LIST_ERR_MSG_NO_ERROR    0x0000
 #define LIST_ERR_MSG_CREATE_NODE 0x0001
+#define LIST_ERR_MSG_EMPTY_LIST  0x0002
 
 /* Here will be defined the values of the
  * functions (that will be used by the error
  * message)
  */
 
-#define LIST_ERR_FUNCTION_BEGIN  0x0000
-#define LIST_ERR_FUNCTION_INSERT 0x0100
+#define LIST_ERR_FUNCTION_BEGIN    0x0000
+#define LIST_ERR_FUNCTION_INSERT   0x0100
+#define LIST_ERR_FUNCTION_INSERT_H 0x0200
+#define LIST_ERR_FUNCTION_INSERT_T 0x0300
+#define LIST_ERR_FUNCTION_REMOVE   0x0400
+#define LIST_ERR_FUNCTION_REMOVE_H 0x0500
+#define LIST_ERR_FUNCTION_REMOVE_T 0x0600
 
 typedef void *        list_type;
 typedef void          list_destroyvalue;
@@ -45,7 +51,7 @@ typedef struct _node {
 } node;
 
 typedef struct _list {
-  node *head;
+  node *header;
   node *tail;
   list_size size;
 
@@ -57,8 +63,16 @@ extern char *listerr_msg(list_err err);
 extern list_err listbegin(list *l,
                           list_type header,
                           list_destroyvalue (*destroyelem)(list_type));
-// TODO
+
+/* I think I must explain the difference
+ * between clean and destroy... clean will
+ * destroy all elements, but the list will
+ * be functional... destroy will clean and
+ * make the list non-functional
+ */
 extern void listclean(list *l);
+extern void listdestroy(list *l);
+extern inline uint8_t listempty(list *l);
 extern list_err listinserthead(list *l,
                                list_type elem);
 extern list_err listinserttail(list *l,
@@ -68,6 +82,7 @@ extern list_err listinsert(list *l,
                            list_position n);
 extern list_err listremovehead(list *l);
 extern list_err listremovetail(list *l);
+// TODO
 extern list_err listremove(list *l,
                            list_position n);
 

@@ -6,6 +6,16 @@ char *listerr_func(list_err err) {
       return "listbegin";
     case LIST_ERR_FUNCTION_INSERT:
       return "listinsert";
+    case LIST_ERR_FUNCTION_INSERT_H:
+      return "listinserthead";
+    case LIST_ERR_FUNCTION_INSERT_T:
+      return "listinserttail";
+    case LIST_ERR_FUNCTION_REMOVE:
+      return "listremove";
+    case LIST_ERR_FUNCTION_REMOVE_H:
+      return "listremovehead";
+    case LIST_ERR_FUNCTION_REMOVE_T:
+      return "listremovetail";
     default:
       return "";
   }
@@ -17,6 +27,8 @@ char *listerr_msg(list_err err) {
       return "No errors.";
     case LIST_ERR_MSG_CREATE_NODE:
       return "Failed in creation of node.";
+    case LIST_ERR_MSG_EMPTY_LIST:
+      return "List is empty.";
     default:
       return "";
   }
@@ -33,7 +45,7 @@ list_err listbegin(
     newnode->next = newnode;
     newnode->prev = newnode;
 
-    l->head        = newnode;
+    l->header      = newnode;
     l->tail        = newnode;
     l->size        = 0;
     l->destroyelem = destroyelem;
@@ -43,16 +55,129 @@ list_err listbegin(
   return LIST_ERR_MSG_CREATE_NODE | LIST_ERR_FUNCTION_BEGIN;
 }
 
+void listclean(list *l) {
+  node *_node = l->header->next;
 
+  while(_node != l->header) {
+    l->destroyelem(_node->elem);
+    free(_node);
+    _node = _node->next;
+  }
+
+  l->size = 0;
+}
+
+void listdestroy(list *l) {
+  node *_node = l->header->next;
+
+  while(_node != l->header) {
+    l->destroyelem(_node->elem);
+    free(_node);
+    _node = _node->next;
+  }
+
+  if(_node->elem)
+    l->destroyelem(_node->elem);
+  free(_node);
+
+  l->header = NULL;
+  l->tail   = NULL;
+  l->size   = 0;
+}
+
+inline uint8_t listempty(list *l) {
+  if(l->size)
+    return 0;
+  return 1;
+}
+
+list_err listinserthead(list *l,
+                        list_type elem) {
+  node *newnode = (node *)malloc(sizeof(node));
+  if(newnode) {
+    newnode->elem       = elem;
+    newnode->next       = l->header;
+    newnode->prev       = l->tail;
+// hahahahhaha... well, I write this line after
+// you will know what I'm talking about
+    l->header->next->prev = newnode;
+    l->header->next       = newnode;
+    return LIST_ERR_MSG_NO_ERROR | LIST_ERR_FUNCTION_INSERT_H;
+  }
+  return LIST_ERR_MSG_CREATE_NODE | LIST_ERR_FUNCTION_INSERT_H;
+}
+
+list_err listinserttail(list *l,
+                        list_type elem) {
+  node *newnode = (node *)malloc(sizeof(node));
+  if(newnode) {
+    newnode->elem       = elem;
+    newnode->next       = l->header;
+    newnode->prev       = l->tail;
+// hahahhahahah 2 (I'm having second toughts about it)
+// I read that making several -> wasn't good
+// so... what to do? don't really know...
+    l->tail->prev->next = newnode;
+    l->tail->prev       = newnode;
+    return LIST_ERR_MSG_NO_ERROR | LIST_ERR_FUNCTION_INSERT_T;
+  }
+  return LIST_ERR_MSG_CREATE_NODE | LIST_ERR_FUNCTION_INSERT_T;
+}
+
+list_err listinsert(list *l,
+                    list_type elem,
+                    list_position n) {
+  node *newnode = (node *)malloc(sizeof(node));
+  if(newnode) {
+    newnode->elem = elem;
+
+    if(n > l->size) n = l->size;
+
+    node **prev = &(l->header);
+    while(n-- > 0)
+      prev = &((*prev)->next);
+
+    newnode->next = (*prev)->next;
+    newnode->prev = *prev;
+// I really laugh when I write this line... hahaha
+// if you are confused, don't be... this was the first one
+    (*prev)->next->prev = newnode;
+    *prev = newnode;
+    return LIST_ERR_MSG_NO_ERROR | LIST_ERR_FUNCTION_INSERT;
+  }
+  return LIST_ERR_MSG_CREATE_NODE | LIST_ERR_FUNCTION_INSERT;
+}
+
+list_err listremovehead(list *l) {
+  if(l->size) {
+    node *head = l->header->next;
+    l->header->next = head->next;
+    l->destroyelem(head->elem);
+    free(head);
+    return LIST_ERR_MSG_NO_ERROR | LIST_ERR_FUNCTION_REMOVE_H;
+  }
+  return LIST_ERR_MSG_EMPTY_LIST | LIST_ERR_FUNCTION_REMOVE_H;
+}
+
+list_err listremovetail(list *l) {
+  if(l->size) {
+    node *tail = l->tail;
+    tail->prev->next = tail->next;
+    l->destroyelem(tail->elem);
+    free(tail);
+    return LIST_ERR_MSG_NO_ERROR | LIST_ERR_FUNCTION_REMOVE_T;
+  }
+  return LIST_ERR_MSG_EMPTY_LIST | LIST_ERR_FUNCTION_REMOVE_T;
+}
 
 /* Iterator */
 void list_itrbind(iterator *i, void *l) {
   i->data = l;
-  i->node = ((list *)l)->head->next;
+  i->node = ((list *)l)->header->next;
 }
 
 uint8_t list_itrlast(iterator *i) {
-  if(i->node == ((list *)(i->data))->head)
+  if(i->node == ((list *)(i->data))->header)
     return 1;
   return 0;
 }
