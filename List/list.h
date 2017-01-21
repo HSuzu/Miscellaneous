@@ -1,7 +1,7 @@
 #ifndef LIST_H
 #define LIST_H
 
-#define PATH_ITERATOR "../iterator/iterator.h"
+#define PATH_ITERATOR "../Iterator/iterator.h"
 
 /* Include standard librarys */
 #include <stdint.h>
@@ -46,7 +46,7 @@ typedef struct _node {
 
 typedef struct _list {
   node *head;
-  node *tail.
+  node *tail;
   list_size size;
 
   list_destroyvalue (*destroyelem)(list_type);
@@ -55,7 +55,8 @@ typedef struct _list {
 extern char *listerr_func(list_err err);
 extern char *listerr_msg(list_err err);
 extern list_err listbegin(list *l,
-                          list_type header);
+                          list_type header,
+                          list_destroyvalue (*destroyelem)(list_type));
 // TODO
 extern void listclean(list *l);
 extern list_err listinserthead(list *l,

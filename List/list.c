@@ -6,6 +6,8 @@ char *listerr_func(list_err err) {
       return "listbegin";
     case LIST_ERR_FUNCTION_INSERT:
       return "listinsert";
+    default:
+      return "";
   }
 }
 
@@ -15,6 +17,8 @@ char *listerr_msg(list_err err) {
       return "No errors.";
     case LIST_ERR_MSG_CREATE_NODE:
       return "Failed in creation of node.";
+    default:
+      return "";
   }
 }
 
@@ -24,7 +28,7 @@ list_err listbegin(
     list_destroyvalue (*destroyelem)(list_type)
   ) {
   node *newnode = (node *)malloc(sizeof(node));
-  if(node) {
+  if(newnode) {
     newnode->elem = header;
     newnode->next = newnode;
     newnode->prev = newnode;
@@ -40,22 +44,23 @@ list_err listbegin(
 }
 
 
+
 /* Iterator */
-void list_itrbind(iterator *i, void *list) {
-  i->data = list;
-  i->node = (list *)list->header->next;
+void list_itrbind(iterator *i, void *l) {
+  i->data = l;
+  i->node = ((list *)l)->head->next;
 }
 
 uint8_t list_itrlast(iterator *i) {
-  if(i->node == ((node *)(i->data))->header)
+  if(i->node == ((list *)(i->data))->head)
     return 1;
   return 0;
 }
 
 void list_itrnext(iterator *i) {
-  i->data = ((node *)(i->data))->next;
+  i->data = ((node *)(i->node))->next;
 }
 
 itrelem list_itrretrieve(iterator *i) {
-  return ((node *)(i->data))->elem;
+  return ((node *)(i->node))->elem;
 }
