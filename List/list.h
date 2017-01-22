@@ -88,7 +88,9 @@ extern list_err listremove(list *l,
 
 /* Iterator */
 extern void      list_itrbind(iterator *i, void *);
+extern uint8_t   list_itrfirst(iterator *i);
 extern uint8_t   list_itrlast(iterator *i);
+extern void      list_itrprev(iterator *i);
 extern void      list_itrnext(iterator *i);
 extern list_type list_itrretrieve(iterator *i);
 

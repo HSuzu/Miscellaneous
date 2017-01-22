@@ -191,13 +191,23 @@ list_err listremove(list *l,
 /* Iterator */
 void list_itrbind(iterator *i, void *l) {
   i->data = l;
-  i->node = ((list *)l)->header->next;
+  i->node = ((list *)l)->header;
 }
 
-uint8_t list_itrlast(iterator *i) {
+uint8_t list_itrfirst(iterator *i) {
   if(i->node == ((list *)(i->data))->header)
     return 1;
   return 0;
+}
+
+uint8_t list_itrlast(iterator *i) {
+  if(i->node == ((list *)(i->data))->tail)
+    return 1;
+  return 0;
+}
+
+void list_itrprev(iterator *i) {
+  i->data = ((node *)(i->node))->prev;
 }
 
 void list_itrnext(iterator *i) {
