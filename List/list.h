@@ -82,7 +82,6 @@ extern list_err listinsert(list *l,
                            list_position n);
 extern list_err listremovehead(list *l);
 extern list_err listremovetail(list *l);
-// TODO
 extern list_err listremove(list *l,
                            list_position n);
 

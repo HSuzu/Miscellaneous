@@ -132,8 +132,8 @@ list_err listinsert(list *l,
     newnode->elem = elem;
 
     if(n > l->size) n = l->size;
-
-    node **prev = &(l->header);
+// Make sure we are counting correct
+    node **prev = &(l->header->next);
     while(n-- > 0)
       prev = &((*prev)->next);
 
@@ -168,6 +168,24 @@ list_err listremovetail(list *l) {
     return LIST_ERR_MSG_NO_ERROR | LIST_ERR_FUNCTION_REMOVE_T;
   }
   return LIST_ERR_MSG_EMPTY_LIST | LIST_ERR_FUNCTION_REMOVE_T;
+}
+
+list_err listremove(list *l,
+                    list_position n) {
+  if(l->size) {
+    node **prev = &(l->header->next);
+    if(n > l->size) n = l->size;
+    while(n-- > 0)
+      prev = &((*prev)->next);
+
+    node *rmnode = (*prev)->next;
+    rmnode->next->prev = *prev;
+    *prev = rmnode->next;
+    l->destroyelem(rmnode->elem);
+    free(rmnode);
+    return LIST_ERR_MSG_NO_ERROR | LIST_ERR_FUNCTION_REMOVE_T;
+  }
+  return LIST_ERR_MSG_EMPTY_LIST | LIST_ERR_FUNCTION_REMOVE;
 }
 
 /* Iterator */
