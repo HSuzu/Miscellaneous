@@ -217,3 +217,33 @@ void list_itrnext(iterator *i) {
 itrelem list_itrretrieve(iterator *i) {
   return ((node *)(i->node))->elem;
 }
+
+/* Sorting */
+void listswap(list *l,
+              list_position i,
+              list_position e) {
+  if(i > l->size)
+    i = l->size;
+  if(e > l->size)
+    e = l->size;
+
+  if(i == e) return;
+  if(e < i) {
+    list_position j = i;
+    i = e;
+    e = j;
+  }
+ // TODO: we can optmize
+  node *node1 = l->header;
+  while(i-- > 0)
+    node1 = node1->next;
+
+  e -= i;
+  node *node2 = node1;
+  while(e-- > 0)
+    node2 = node2->next;
+
+  list_type aux = node1->elem;
+  node1->elem = node2->elem;
+  node2->elem = aux;
+}

@@ -94,4 +94,9 @@ extern void      list_itrprev(iterator *i);
 extern void      list_itrnext(iterator *i);
 extern list_type list_itrretrieve(iterator *i);
 
+/* Sorting */
+extern void listswap(list *l,
+                     list_position i,
+                     list_position e);
+
 #endif
