@@ -13,7 +13,11 @@
  * }
  */
 
-#include <stdint.h>
+// #include <stdint.h>
+
+#define PATH_H "../common_header.h"
+
+#include PATH_H
 
 /* WOW, I remembered!!!
  * http://www.di-mare.com/adolfo/p/c-iter.htm
